@@ -124,13 +124,12 @@ class JSONRPCDispatcher:
 
         if jsondict['method'] in self.methods:
             try:
-                try:
-                    result = self.methods[jsondict.get('method')] \
-                                    (*jsondict.get('params', []), **kwargs)
-                except TypeError:
-                    # Catch unexpected keyword argument error
-                    result = self.methods[jsondict.get('method')] \
-                                         (*jsondict.get('params', []))
+                method = self.methods[jsondict["method"]]
+                # pop unexpected arguments
+                for k in kwargs.keys():
+                    if k not in method.func_code.co_varnames:
+                        kwargs.pop(k)
+                result = method(*jsondict.get('params', []), **kwargs)
             except Exception, e:
                 # this catches any error from the called method raising
                 # an exception to the wrong number of params being sent
