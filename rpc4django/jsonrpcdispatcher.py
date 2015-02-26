@@ -29,6 +29,12 @@ except NameError:
     basestring = str
 
 
+class RPCException(Exception):
+	def __init__(self, message, code):
+		self.message = message
+		self.code = code
+
+
 class JSONRPCDispatcher(object):
     '''
     This class can be used encode and decode jsonrpc messages, dispatch
@@ -123,6 +129,11 @@ class JSONRPCDispatcher(object):
                 except TypeError:
                     # Catch unexpected keyword argument error
                     result = self.methods[jsondict.get('method')](*jsondict.get('params', []))
+            except RPCException as e:
+                # Custom message and code
+                return self._encode_result(jsondict.get('id', ''), None, {
+                    'message': e.message,
+                    'code': e.code})
             except Exception as e:
                 # this catches any error from the called method raising
                 # an exception to the wrong number of params being sent
