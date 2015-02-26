@@ -24,7 +24,7 @@ Installation
 
 ::
 
-    pip install rpc4django[reST]
+    pip install git+git://github.com/MasoudMax/rpc4django.git
 
 
 Configuration
