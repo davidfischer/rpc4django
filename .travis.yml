@@ -16,7 +16,7 @@ env:
   - DJANGO="Django<1.9"
 
 install:
-  - pip install -q Django==$DJANGO
+  - pip install -q $DJANGO
   - pip install flake8 --use-mirrors
 
 script:
