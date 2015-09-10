@@ -5,10 +5,24 @@ python:
   - "2.6"
   - "2.7"
   - "3.3"
+  - "3.4"
+
+env:
+  - DJANGO="Django<1.4"
+  - DJANGO="Django<1.5"
+  - DJANGO="Django<1.6"
+  - DJANGO="Django<1.7"
+  - DJANGO="Django<1.8"
+  - DJANGO="Django<1.9"
 
 install:
+  - pip install -q Django==$DJANGO
   - pip install flake8 --use-mirrors
 
 script:
   - flake8 --ignore=E501,W391 rpc4django
-  - python setup.py test
+  - if [ $TRAVIS_PYTHON_VERSION == '2.6' ] && ([ $DJANGO == 'Django<1.8' ] || [ $DJANGO == 'Django<1.9' ]); then 
+        return 0;  
+    else
+        python setup.py test
+    fi
