@@ -259,8 +259,7 @@ class RPCDispatcher(object):
     **Attributes**
 
     ``url``
-      The URL that handles RPC requests (eg. ``/RPC2``)
-      This is needed by ``system.describe``.
+      (this is no longer used)
     ``rpcmethods``
       A list of :class:`RPCMethod<rpc4django.rpcdispatcher.RPCMethod>` instances
       available to be called by the dispatcher
@@ -293,14 +292,16 @@ class RPCDispatcher(object):
         self.register_rpcmethods(apps)
 
     @rpcmethod(name='system.describe', signature=['struct'])
-    def system_describe(self):
+    def system_describe(self, **kwargs):
         '''
         Returns a simple method description of the methods supported
         '''
 
+        request = kwargs.get('request', None)
+
         description = {}
         description['serviceType'] = 'RPC4Django JSONRPC+XMLRPC'
-        description['serviceURL'] = self.url,
+        description['serviceURL'] = request.path
         description['methods'] = [{'name': method.name,
                                    'summary': method.help,
                                    'params': method.get_params(),

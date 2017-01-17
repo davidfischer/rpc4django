@@ -14,9 +14,9 @@ The main entry point for RPC4Django. Usually, the user simply puts
 import logging
 import json
 from django.http import HttpResponse, Http404, HttpResponseForbidden
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.conf import settings
-from django.core.urlresolvers import reverse, NoReverseMatch, get_mod_func
+from django.core.urlresolvers import get_mod_func
 from django.views.decorators.csrf import csrf_exempt
 
 try:
@@ -243,7 +243,7 @@ def serve_rpc_request(request):
         methods = dispatcher.list_methods()
         template_data = {
             'methods': methods,
-            'url': URL,
+            'url': request.path,
 
             # rpc4django version
             'version': version(),
@@ -251,17 +251,8 @@ def serve_rpc_request(request):
             # restricts the ability to test the rpc server from the docs
             'restrict_rpctest': RESTRICT_RPCTEST,
         }
-        from django.template import RequestContext
-        return render_to_response('rpc4django/rpcmethod_summary.html',
-                                  template_data,
-                                  context_instance=RequestContext(request))
+        return render(request, 'rpc4django/rpcmethod_summary.html', template_data)
 
-
-# reverse the method for use with system.describe and ajax
-try:
-    URL = reverse(serve_rpc_request)
-except NoReverseMatch:
-    URL = ''
 
 try:
     # Python2
@@ -280,5 +271,5 @@ else:
 
 # instantiate the rpcdispatcher -- this examines the INSTALLED_APPS
 # for any @rpcmethod decorators and adds them to the callable methods
-dispatcher = RPCDispatcher(URL, APPS, RESTRICT_INTROSPECTION,
+dispatcher = RPCDispatcher('', APPS, RESTRICT_INTROSPECTION,
                            RESTRICT_OOTB_AUTH, json_encoder)
