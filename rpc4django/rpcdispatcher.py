@@ -15,7 +15,11 @@ try:
     from importlib import import_module
 except ImportError:
     from django.utils.importlib import import_module
-from django.core.urlresolvers import get_mod_func
+try:
+    from django.core.urlresolvers import get_mod_func
+except ModuleNotFoundError:
+    #Django 2.0+
+    from django.urls import get_mod_func
 
 try:
     # Python2.x
